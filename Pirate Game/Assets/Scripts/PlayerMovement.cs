@@ -4,22 +4,30 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement")]
     public float walkSpeed = 5f;
     public float sprintSpeed = 10f;
+
+    [Header("Jumping")]
     public float jumpHeight = 2f;
     public float gravity = -20f;
+    public float jumpCooldown = 1f;
 
     private CharacterController controller;
     private Vector3 velocity;
+    private float nextJumpTime = 0f;
 
-    void Start()
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
     }
 
     void Update()
     {
-        // Movement
+        if (Keyboard.current == null)
+            return;
+
+        // -------- MOVEMENT --------
         Vector3 movement = Vector3.zero;
 
         if (Keyboard.current.wKey.isPressed)
@@ -34,36 +42,28 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current.dKey.isPressed)
             movement += transform.right;
 
-        // Prevent diagonal movement from being faster
         movement = movement.normalized;
 
-        // Sprinting
-        float currentSpeed = walkSpeed;
+        float currentSpeed = Keyboard.current.leftShiftKey.isPressed
+            ? sprintSpeed
+            : walkSpeed;
 
-        if (Keyboard.current.leftShiftKey.isPressed)
-        {
-            currentSpeed = sprintSpeed;
-        }
-
-        // Move horizontally
         controller.Move(movement * currentSpeed * Time.deltaTime);
 
-        // Keep player on the ground
-        if (controller.isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
-        // Jump
-        if (controller.isGrounded && Keyboard.current.spaceKey.wasPressedThisFrame)
+        // -------- JUMP WITH COOLDOWN --------
+        if (Keyboard.current.spaceKey.wasPressedThisFrame &&
+            Time.time >= nextJumpTime)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+            // Start the cooldown
+            nextJumpTime = Time.time + jumpCooldown;
         }
 
-        // Apply gravity
+        // -------- GRAVITY --------
         velocity.y += gravity * Time.deltaTime;
 
-        // Move vertically
+        // -------- VERTICAL MOVEMENT --------
         controller.Move(velocity * Time.deltaTime);
     }
 }
