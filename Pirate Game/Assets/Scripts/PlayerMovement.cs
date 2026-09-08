@@ -13,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -20f;
     public float jumpCooldown = 1f;
 
+    [Header("Camera")]
+    public Transform cameraTransform;
+
     private CharacterController controller;
     private Vector3 velocity;
     private float nextJumpTime = 0f;
@@ -20,6 +23,12 @@ public class PlayerMovement : MonoBehaviour
     void Awake()
     {
         controller = GetComponent<CharacterController>();
+
+        // Automatically use the Main Camera if one isn't assigned
+        if (cameraTransform == null && Camera.main != null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
     }
 
     void Update()
@@ -27,23 +36,42 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current == null)
             return;
 
-        // -------- MOVEMENT --------
+        // -------- MOVEMENT INPUT --------
         Vector3 movement = Vector3.zero;
 
         if (Keyboard.current.wKey.isPressed)
-            movement += transform.forward;
+            movement.z += 1f;
 
         if (Keyboard.current.sKey.isPressed)
-            movement -= transform.forward;
+            movement.z -= 1f;
 
         if (Keyboard.current.aKey.isPressed)
-            movement -= transform.right;
+            movement.x -= 1f;
 
         if (Keyboard.current.dKey.isPressed)
-            movement += transform.right;
+            movement.x += 1f;
 
         movement = movement.normalized;
 
+        // -------- CAMERA-RELATIVE MOVEMENT --------
+        if (cameraTransform != null)
+        {
+            Vector3 cameraForward = cameraTransform.forward;
+            Vector3 cameraRight = cameraTransform.right;
+
+            // Prevent looking up/down from affecting movement
+            cameraForward.y = 0f;
+            cameraRight.y = 0f;
+
+            cameraForward.Normalize();
+            cameraRight.Normalize();
+
+            movement =
+                cameraForward * movement.z +
+                cameraRight * movement.x;
+        }
+
+        // -------- SPEED --------
         float currentSpeed = Keyboard.current.leftShiftKey.isPressed
             ? sprintSpeed
             : walkSpeed;
@@ -56,7 +84,6 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
-            // Start the cooldown
             nextJumpTime = Time.time + jumpCooldown;
         }
 
