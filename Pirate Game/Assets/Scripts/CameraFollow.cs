@@ -1,58 +1,39 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ThirdPersonCamera : MonoBehaviour
+public class FirstPersonCamera : MonoBehaviour
 {
-    [Header("Target")]
-    public Transform player;
+    [Header("Player")]
+    public Transform playerBody;
 
-    [Header("Camera Settings")]
-    public float distance = 5f;
-    public float height = 2f;
+    [Header("Settings")]
     public float sensitivity = 0.1f;
-    public float smoothSpeed = 10f;
 
-    private float yaw;
-    private float pitch;
+    private float xRotation;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        yaw = transform.eulerAngles.y;
-        pitch = transform.eulerAngles.x;
     }
 
-    void LateUpdate()
+    void Update()
     {
-        if (player == null)
+        if (Mouse.current == null)
             return;
 
-        // Mouse movement
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
-        yaw += mouseDelta.x * sensitivity;
-        pitch -= mouseDelta.y * sensitivity;
+        float mouseX = mouseDelta.x * sensitivity;
+        float mouseY = mouseDelta.y * sensitivity;
 
-        // Limit vertical camera movement
-        pitch = Mathf.Clamp(pitch, -40f, 60f);
+        // Look up and down
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // Calculate rotation
-        Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // Camera position
-        Vector3 offset = rotation * new Vector3(0f, height, -distance);
-        Vector3 targetPosition = player.position + offset;
-
-        // Smoothly follow the player
-        transform.position = Vector3.Lerp(
-            transform.position,
-            targetPosition,
-            smoothSpeed * Time.deltaTime
-        );
-
-        // Apply rotation
-        transform.rotation = rotation;
+        // Turn the player left and right
+        playerBody.Rotate(Vector3.up * mouseX);
     }
 }

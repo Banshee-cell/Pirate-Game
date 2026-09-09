@@ -297,7 +297,6 @@ MonoBehaviour:
   jumpHeight: 1
   gravity: -20
   jumpCooldown: 5
-  cameraTransform: {fileID: 0}
 --- !u!143 &66192021
 CharacterController:
   m_ObjectHideFlags: 0
@@ -415,12 +414,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7074372, z: -0, w: 0.70677614}
-  m_LocalPosition: {x: -0.74, y: 2.04, z: -0.09}
+  m_LocalRotation: {x: -0, y: -0.7074373, z: -0, w: 0.7067762}
+  m_LocalPosition: {x: -0.01, y: 0.7199999, z: -0.018}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 66192025}
   m_LocalEulerAnglesHint: {x: 0, y: -90.054, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
@@ -478,11 +477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f412ec6af546f48b11f47d548844e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonCamera
-  player: {fileID: 66192025}
-  distance: 3
-  height: 1
+  playerBody: {fileID: 66192025}
   sensitivity: 0.1
-  smoothSpeed: 10
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -829,7 +825,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4818707665662855854, guid: 66e27aea8437b1d4abe3673f297d94d3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 330585546}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8143461113373229729, guid: 66e27aea8437b1d4abe3673f297d94d3, type: 3}
       insertIndex: -1
@@ -842,7 +841,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 8832711247597917177}
